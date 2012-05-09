@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:p="http://www.springframework.org/schema/p"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+          http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context-2.5.xsd
+          http://www.springframework.org/schema/tx
+          http://www.springframework.org/schema/tx/spring-tx-2.5.xsd" >
+
+    <context:property-placeholder location="classpath:jdbc.properties" />
+    <context:component-scan base-package="org.latihan" />
+    <tx:annotation-driven transaction-manager="txManager" />
+
+   <bean id="dataSource"
+   class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+   p:driverClassName="${hibernate.connection.driver_class}" p:url="${hibernate.connection.url}"
+   p:username="${hibernate.connection.username}" p:password="${hibernate.connection.password}" />
+
+      <!-- setting spring jika menggunakan sessionfactory-->
+    <bean id="sessionFactory"
+   class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
+   p:dataSource-ref="dataSource">
+        <property name="configLocation">
+        <value>classpath:hibernate.cfg.xml</value>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">
+                    ${hibernate.dialect}
+                </prop>
+                <prop key="hibernate.show_sql">
+                    ${hibernate.show_sql}
+                </prop>
+                <prop key="hibernate.generate_statistics">
+                    ${hibernate.show_statistics}
+                </prop>
+                <!-- ini harus diremark agar tablenya digenerate -->
+                <prop key="hibernate.hbm2ddl.auto">
+                    ${hibernate.hbm2ddl_auto}
+		</prop>
+            </props>
+        </property>
+    </bean>
+
+  <bean id="txManager"
+          class="org.springframework.orm.hibernate3.HibernateTransactionManager"
+                p:sessionFactory-ref="sessionFactory" />
+</beans>
